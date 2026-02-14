@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIN X MODDER - SENSIBILITY GENERATOR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effet de grille */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* Effet de scan */
+        body::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 20px,
+                rgba(0, 255, 255, 0.03) 20px,
+                rgba(255, 0, 255, 0.03) 40px
+            );
+            animation: scan 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(50px) rotate(0deg); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Terminal principal */
+        .terminal {
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.2),
+                inset 0 0 20px rgba(255, 0, 255, 0.1);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .terminal::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 12px;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        /* En-tête */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .system-title {
+            color: #00ffff;
+            font-size: 2em;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 10px;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .version {
+            color: #ff00ff;
+            font-size: 0.9em;
+            opacity: 0.7;
+            letter-spacing: 2px;
+        }
+
+        /* Ligne de statut */
+        .status-line {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.8em;
+            color: #ff00ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ip-display {
+            color: #00ffff;
+            letter-spacing: 1px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Avertissement */
+        .warning {
+            background: rgba(255, 0, 255, 0.1);
+            border-left: 4px solid #00ffff;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: #ff00ff;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .warning i {
+            margin-right: 10px;
+            animation: blink 2s infinite;
+        }
+
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00ffff;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-container input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            padding: 15px;
+            color: #ff00ff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1em;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            border-color: #ff00ff;
+        }
+
+        .input-container .glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 255, 0.1);
+            border-radius: 5px;
+            filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .input-container input:focus + .glow {
+            opacity: 1;
+        }
+
+        /* Options de login */
+        .login-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn.premium {
+            border-color: #ff00ff;
+            color: #ff00ff;
+        }
+
+        .login-btn.premium:hover {
+            background: rgba(255, 0, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        /* Menu après login */
+        #sensibilityMenu {
+            display: none;
+            margin-top: 20px;
+            animation: slideIn 0.5s;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Style scrollbar */
+        #sensibilityMenu::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #sensibilityMenu::-webkit-scrollbar-track {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        #sensibilityMenu::-webkit-scrollbar-thumb {
+            background: #00ffff;
+            border-radius: 4px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-header {
+            color: #00ffff;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ff00ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Badge utilisateur */
+        .user-badge {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ff00ff;
+        }
+
+        .user-badge.premium {
+            border-color: #ff00ff;
+            color: #ff00ff;
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        /* Compteur */
+        .counter {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #ff00ff;
+        }
+
+        .counter span {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        /* TOUS LES SLIDERS DE SENSIBILITÉ */
+        .slider-item {
+            margin-bottom: 25px;
+            background: rgba(0, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 255, 0.2);
+        }
+
+        .slider-item label {
+            display: flex;
+            justify-content: space-between;
+            color: #ff00ff;
+            margin-bottom: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .slider-item input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            height: 10px;
+            border-radius: 5px;
+            -webkit-appearance: none;
+        }
+
+        .slider-item input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #ff00ff;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff00ff;
+            transition: all 0.2s;
+        }
+
+        .slider-item input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #00ffff;
+            border-color: #ff00ff;
+        }
+
+        .value-badge {
+            background: #00ffff;
+            color: #000;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Presets */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .preset-btn {
+            background: transparent;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        /* Bouton générer */
+        .generate-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2em;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 30px #00ffff;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Liste des codes */
+        .codes-list {
+            margin-top: 20px;
+        }
+
+        .code-item {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-value {
+            font-family: monospace;
+            color: #ff00ff;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #ff00ff;
+            color: #000;
+        }
+
+        /* Logout */
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 10px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        /* Alert */
+        .alert {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ffff;
+            color: #ff00ff;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .alert.error {
+            border-color: #ff00ff;
+            color: #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="terminal">
+            <!-- En-tête -->
+            <div class="header">
+                <div class="system-title">SENSIBILITY GEN</div>
+                <div class="version">SYSTEM V2.0 // CYBER MODE</div>
+            </div>
+
+            <!-- Ligne de statut -->
+            <div class="status-line">
+                <span>IP LOGGED:</span>
+                <span class="ip-display" id="ipAddress">192.168.1.1</span>
+                <span class="blink">⬤</span>
+            </div>
+
+            <!-- Zone d'alerte -->
+            <div id="alert" class="alert"></div>
+
+            <!-- Écran de login -->
+            <div id="loginScreen">
+                <div class="warning">
+                    <i>⚠</i> UNAUTHORIZED ACCESS PROHIBITED
+                </div>
+
+                <div class="form-group">
+                    <label>> ENTER ACCESS KEY</label>
+                    <div class="input-container">
+                        <input type="password" id="keyInput" placeholder="ENTER KEY">
+                        <div class="glow"></div>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <button class="login-btn" onclick="validateKey()">VALIDATE</button>
+                    <button class="login-btn premium" onclick="buyPremium()">PREMIUM</button>
+                </div>
+            </div>
+
+            <!-- MENU SENSIBILITÉS (tous les sliders) -->
+            <div id="sensibilityMenu">
+                <div class="menu-header">> SENSIBILITY GENERATOR</div>
+
+                <!-- Badge utilisateur -->
+                <div id="userBadge" class="user-badge">
+                    KEY: <span id="activeKey"></span> | MODE: <span id="userMode"></span>
+                </div>
+
+                <!-- Compteur -->
+                <div class="counter">
+                    CODES: <span id="codeCounter">0</span> / <span id="maxCodes">1</span>
+                </div>
+
+                <!-- TOUS LES SLIDERS DE SENSIBILITÉ -->
+                <div class="slider-item">
+                    <label>GLOBAL <span class="value-badge" id="globalVal">100</span></label>
+                    <input type="range" id="global" min="0" max="200" value="100" oninput="updateVal('global', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>CAMERA <span class="value-badge" id="cameraVal">100</span></label>
+                    <input type="range" id="camera" min="0" max="200" value="100" oninput="updateVal('camera', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>RED DOT <span class="value-badge" id="redVal">90</span></label>
+                    <input type="range" id="red" min="0" max="200" value="90" oninput="updateVal('red', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>2X SCOPE <span class="value-badge" id="scope2xVal">85</span></label>
+                    <input type="range" id="scope2x" min="0" max="200" value="85" oninput="updateVal('scope2x', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>4X SCOPE <span class="value-badge" id="scope4xVal">75</span></label>
+                    <input type="range" id="scope4x" min="0" max="200" value="75" oninput="updateVal('scope4x', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>AWM <span class="value-badge" id="awmVal">70</span></label>
+                    <input type="range" id="awm" min="0" max="200" value="70" oninput="updateVal('awm', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>ACCURACY <span class="value-badge" id="accuracyVal">80</span></label>
+                    <input type="range" id="accuracy" min="0" max="100" value="80" oninput="updateVal('accuracy', this.value)">
+                </div>
+                <div class="slider-item">
+                    <label>GYROSCOPE <span class="value-badge" id="gyroVal">50</span></label>
+                    <input type="range" id="gyro" min="0" max="100" value="50" oninput="updateVal('gyro', this.value)">
+                </div>
+
+                <!-- Presets -->
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="applyPreset('headshot')">HEADSHOT</button>
+                    <button class="preset-btn" onclick="applyPreset('close')">CLOSE</button>
+                    <button class="preset-btn" onclick="applyPreset('long')">LONG</button>
+                    <button class="preset-btn" onclick="applyPreset('pro')">PRO</button>
+                </div>
+
+                <!-- Generate button -->
+                <button class="generate-btn" id="generateBtn" onclick="generateCode()">GENERATE CODE</button>
+
+                <!-- Codes list -->
+                <div class="codes-list" id="codesContainer">
+                    <div style="color: #00ffff; text-align: center; opacity: 0.5;">NO CODES GENERATED</div>
+                </div>
+
+                <!-- Logout -->
+                <button class="logout-btn" onclick="logout()">> EXIT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== LES 2 CLÉS =====
+        const VALID_KEYS = {
+            'FREE-2025': { type: 'free', maxCodes: 1 },
+            'PREMIUM-2025': { type: 'premium', maxCodes: 50 }
+        };
+
+        let currentKey = null;
+        let currentType = null;
+        let maxCodes = 0;
+        let generatedCodes = [];
+
+        // IP aléatoire
+        function generateRandomIP() {
+            const ip = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            document.getElementById('ipAddress').textContent = ip;
+        }
+
+        // Update valeurs
+        function updateVal(type, val) {
+            document.getElementById(type + 'Val').textContent = val;
+        }
+
+        // Charger données
+        function loadUserData() {
+            if (!currentKey) return;
+            const saved = localStorage.getItem(`codes_${currentKey}`);
+            if (saved) {
+                generatedCodes = JSON.parse(saved);
+            } else {
+                generatedCodes = [];
+            }
+            updateCounter();
+            displayCodes();
+        }
+
+        function saveUserData() {
+            if (!currentKey) return;
+            localStorage.setItem(`codes_${currentKey}`, JSON.stringify(generatedCodes));
+        }
+
+        // Valider clé
+        function validateKey() {
+            const key = document.getElementById('keyInput').value.trim();
+            
+            if (!key) {
+                showAlert('INVALID KEY', 'error');
+                return;
+            }
+
+            if (VALID_KEYS[key]) {
+                currentKey = key;
+                currentType = VALID_KEYS[key].type;
+                maxCodes = VALID_KEYS[key].maxCodes;
+                
+                loadUserData();
+                
+                document.getElementById('activeKey').textContent = key.substring(0,4)+'****';
+                document.getElementById('userMode').textContent = currentType.toUpperCase();
+                
+                const badge = document.getElementById('userBadge');
+                if (currentType === 'premium') {
+                    badge.classList.add('premium');
+                    document.getElementById('maxCodes').textContent = '50';
+                } else {
+                    badge.classList.remove('premium');
+                    document.getElementById('maxCodes').textContent = '1';
+                }
+                
+                showAlert('ACCESS GRANTED', 'success');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('sensibilityMenu').style.display = 'block';
+                
+                updateCounter();
+            } else {
+                showAlert('INVALID KEY', 'error');
+            }
+        }
+
+        // Acheter premium
+        function buyPremium() {
+            window.open('https://paypal.com', '_blank');
+            showAlert('PREMIUM KEY: PREMIUM-2025', 'success');
+        }
+
+        // Presets
+        function applyPreset(type) {
+            let vals = {};
+            if (type === 'headshot') {
+                vals = { global: 95, camera: 100, red: 85, scope2x: 75, scope4x: 65, awm: 60, accuracy: 90, gyro: 70 };
+            } else if (type === 'close') {
+                vals = { global: 120, camera: 115, red: 110, scope2x: 95, scope4x: 80, awm: 75, accuracy: 85, gyro: 60 };
+            } else if (type === 'long') {
+                vals = { global: 80, camera: 85, red: 70, scope2x: 65, scope4x: 55, awm: 50, accuracy: 95, gyro: 40 };
+            } else if (type === 'pro') {
+                vals = { global: 105, camera: 110, red: 95, scope2x: 90, scope4x: 85, awm: 80, accuracy: 92, gyro: 55 };
+            }
+            
+            for (let [key, val] of Object.entries(vals)) {
+                let el = document.getElementById(key);
+                if (el) {
+                    el.value = val;
+                    document.getElementById(key + 'Val').textContent = val;
+                }
+            }
+            showAlert('PRESET LOADED', 'success');
+        }
+
+        // Générer code
+        function generateCode() {
+            if (!currentKey) return;
+
+            if (generatedCodes.length >= maxCodes) {
+                showAlert(`MAX ${maxCodes} CODES`, 'error');
+                return;
+            }
+
+            const values = {
+                global: document.getElementById('global').value,
+                camera: document.getElementById('camera').value,
+                red: document.getElementById('red').value,
+                scope2x: document.getElementById('scope2x').value,
+                scope4x: document.getElementById('scope4x').value,
+                awm: document.getElementById('awm').value,
+                accuracy: document.getElementById('accuracy').value,
+                gyro: document.getElementById('gyro').value
+            };
+
+            const code = 'FF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+            generatedCodes.push({
+                code: code,
+                values: values,
+                date: new Date().toLocaleString()
+            });
+
+            saveUserData();
+            
+            showAlert('CODE GENERATED', 'success');
+            updateCounter();
+            displayCodes();
+        }
+
+        function updateCounter() {
+            document.getElementById('codeCounter').textContent = generatedCodes.length;
+            document.getElementById('generateBtn').disabled = generatedCodes.length >= maxCodes;
+        }
+
+        function displayCodes() {
+            const container = document.getElementById('codesContainer');
+            
+            if (generatedCodes.length === 0) {
+                container.innerHTML = '<div style="color: #00ffff; text-align: center; opacity: 0.5;">NO CODES GENERATED</div>';
+                return;
+            }
+
+            let html = '';
+            generatedCodes.slice().reverse().forEach((item) => {
+                html += `
+                    <div class="code-item">
+                        <span class="code-value">${item.code}</span>
+                        <button class="copy-btn" onclick="copyCode('${item.code}')">COPY</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showAlert('CODE COPIED', 'success');
+            });
+        }
+
+        function logout() {
+            currentKey = null;
+            currentType = null;
+            generatedCodes = [];
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('sensibilityMenu').style.display = 'none';
+            document.getElementById('keyInput').value = '';
+        }
+
+        function showAlert(msg, type) {
+            const alert = document.getElementById('alert');
+            alert.className = 'alert ' + type;
+            alert.textContent = '> ' + msg;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        generateRandomIP();
+    </script>
+</body>
+</html>
